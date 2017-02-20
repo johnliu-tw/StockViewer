@@ -4,13 +4,13 @@
 
  	<div class="buttons" side='left'>
  		<div class="button button-clear">
- 			<h6>Company Name Inc.</h6>
+ 			<h6>{{stockPriceData.Name}}</h6>
  		</div>
  	</div>
- 	<h2 class="title button-left button-right">1000.5000</h2>
+ 	<h2 class="title button-left button-right">{{stockPriceData.LastTradePriceOnly}}</h2>
   	<div class="buttons" side='right'>
  		<div class="button button-clear">
- 			<h6>+100.0000%</h6>
+ 			<h6>{{stockPriceData.Change}}%</h6>
  		</div>
  	</div>
 
@@ -19,11 +19,37 @@
 
   <ion-content class='has-subheader'>
 
+    <nvd3 options="options" data="data"></nvd3>
+
     <div class="card">
     	<div class="item item-divider">Market Data</div>
     	<div class="row row-center">
-    		<div class="col">Data:</div>
-    		<div class="col">1000.500</div>
+    		<div class="col">AverageDailyVolume:</div>
+    		<div class="col">{{stockPriceData.AverageDailyVolume}}</div>
+    	</div>
+    	<div class="row row-center">
+    		<div class="col">DaysHigh:</div>
+    		<div class="col">{{stockPriceData.DaysHigh}}</div>
+    	</div>
+    	<div class="row row-center">
+    		<div class="col">DaysLow:</div>
+    		<div class="col">{{stockPriceData.DaysLow}}</div>
+    	</div>
+    	<div class="row row-center">
+    		<div class="col">YearHigh:</div>
+    		<div class="col">{{stockPriceData.YearHigh}}</div>
+    	</div>
+    	<div class="row row-center">
+    		<div class="col">YearLow:</div>
+    		<div class="col">{{stockPriceData.YearLow}}</div>
+    	</div>
+    	<div class="row row-center">
+    		<div class="col">Volume:</div>
+    		<div class="col">{{stockPriceData.Volume}}</div>
+    	</div>
+    	<div class="row row-center">
+    		<div class="col">MarketCapitalization:</div>
+    		<div class="col">{{stockPriceData.MarketCapitalization}}</div>
     	</div>
     </div>
 
