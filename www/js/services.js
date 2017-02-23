@@ -15,12 +15,12 @@ angular.module('IonicGo.services',[])
    var currentDate = function(){
    	var d = new Date();
    	var date = $filter('date')(d,'yyyy-MM-dd');
-
+    
    	return date;
 
    }
-   var oneYearAgoDate = function(){
-   	var d = new Date(new Date().setDate(new Date().getDate()-365));
+   var oneMonthAgoDate = function(){
+   	var d = new Date(new Date().setDate(new Date().getDate()-30));
    	var date = $filter('date')(d,'yyyy-MM-dd');
 
    	return date;
@@ -28,7 +28,7 @@ angular.module('IonicGo.services',[])
    }
    return {
    	currentDate: currentDate,
-   	oneYearAgoDate: oneYearAgoDate
+   	oneMonthAgoDate: oneMonthAgoDate
    }
 
  })
@@ -69,9 +69,23 @@ angular.module('IonicGo.services',[])
        url="http://query.yahooapis.com/v1/public/yql?format=json&env=store://datatables.org/alltableswithkeys&q=select * from yahoo.finance.historicaldata where symbol = '"+ticker+"' and startDate = '"+fromDate+"' and endDate = '"+endDate+"'"
        $http.get(url)
        .success(function(json){
-       	console.log(json)
-       var jsonData = json;
-       deferred.resolve(jsonData);
+       var jsonData = json.query.results.quote;
+       var priceData = [];
+       jsonData.forEach(function(dayDataObject){
+       	var date = dayDataObject.Date.substring(5),
+       	price= parseFloat(Math.round(dayDataObject.Close*100)/100).toFixed(3);
+        priceDatum= {"label": date ,"value": price}
+        priceData.unshift(priceDatum);
+
+       })
+       
+ 
+       var formattedChartData = 
+       [{ key: 'Cumulative Return', values: priceData }] ;
+        
+         console.log(formattedChartData)
+
+       deferred.resolve(formattedChartData);
 
      })
        .error(function(error){
