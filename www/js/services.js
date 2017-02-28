@@ -33,6 +33,7 @@ angular.module('IonicGo.services',[])
 
  })
 
+
  .factory('chartDataCacheService',function(CacheFactory){
  	var chartDataCache;
     
