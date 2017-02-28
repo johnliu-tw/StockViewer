@@ -1,16 +1,23 @@
 <ion-view view-title="{{ticker}}">
 
+<ion-nav-bar id="stock-nav-bar" class="bar-dark ng-style:reactiveColor">
+	<ion-nav-back-button> 
+	</ion-nav-back-button>>
+</ion-nav-bar>
+
+
+
  <div class="bar bar-subheader bar-stable">
 
  	<div class="buttons" side='left'>
  		<div class="button button-clear">
- 			<h6>{{stockPriceData.Name}}</h6>
+ 			<h6 id="stock-name">{{stockPriceData.Name}}</h6>
  		</div>
  	</div>
- 	<h2 class="title button-left button-right">{{stockPriceData.LastTradePriceOnly}}</h2>
+ 	<h2 id="stock-price" class="title button-left button-right">{{stockPriceData.LastTradePriceOnly | shrinkNumber:2	}}</h2>
   	<div class="buttons" side='right'>
  		<div class="button button-clear">
- 			<h6>{{stockPriceData.Change}}%</h6>
+ 			<h6 id='stock-change' ng-class="stockPriceData.Change < 0 ? 'assertive' : 'balanced' "><span ng-if="stockPriceData.Change >0">+</span>{{stockPriceData.Change | shrinkNumber:2}}<BR>(<span ng-if="stockPriceData.Change >0">+</span>{{stockPriceData.Change | number:3}}%)</h6>
  		</div>
  	</div>
 
@@ -19,37 +26,37 @@
 
   <ion-content class='has-subheader'>
 
-    <nvd3 options="options" data="data"></nvd3>
+    <nvd3 options="options" data="data" id='interactiveChart'></nvd3>
 
-    <div class="card">
+    <div class="card" id="market-data-card">
     	<div class="item item-divider">Market Data</div>
     	<div class="row row-center">
     		<div class="col">AverageDailyVolume:</div>
-    		<div class="col">{{stockPriceData.AverageDailyVolume}}</div>
+    		<div class="col col-20">{{stockPriceData.AverageDailyVolume |shrinkNumber:2}}</div>
     	</div>
     	<div class="row row-center">
     		<div class="col">DaysHigh:</div>
-    		<div class="col">{{stockPriceData.DaysHigh}}</div>
+    		<div class="col col-20">{{stockPriceData.DaysHigh|shrinkNumber:2}}</div>
     	</div>
     	<div class="row row-center">
     		<div class="col">DaysLow:</div>
-    		<div class="col">{{stockPriceData.DaysLow}}</div>
+    		<div class="col col-20">{{stockPriceData.DaysLow|shrinkNumber:2}}</div>
     	</div>
     	<div class="row row-center">
     		<div class="col">YearHigh:</div>
-    		<div class="col">{{stockPriceData.YearHigh}}</div>
+    		<div class="col col-20">{{stockPriceData.YearHigh|shrinkNumber:2}}</div>
     	</div>
     	<div class="row row-center">
     		<div class="col">YearLow:</div>
-    		<div class="col">{{stockPriceData.YearLow}}</div>
+    		<div class="col col-20">{{stockPriceData.YearLow|shrinkNumber:2}}</div>
     	</div>
     	<div class="row row-center">
     		<div class="col">Volume:</div>
-    		<div class="col">{{stockPriceData.Volume}}</div>
+    		<div class="col col-20">{{stockPriceData.Volume|shrinkNumber:2}}</div>
     	</div>
     	<div class="row row-center">
     		<div class="col">MarketCapitalization:</div>
-    		<div class="col">{{stockPriceData.MarketCapitalization}}</div>
+    		<div class="col col-20">{{stockPriceData.MarketCapitalization|shrinkNumber:2}}</div>
     	</div>
     </div>
 

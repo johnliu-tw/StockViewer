@@ -20,7 +20,7 @@ angular.module('IonicGo.services',[])
 
    }
    var oneMonthAgoDate = function(){
-   	var d = new Date(new Date().setDate(new Date().getDate()-30));
+   	var d = new Date(new Date().setDate(new Date().getDate()-15));
    	var date = $filter('date')(d,'yyyy-MM-dd');
 
    	return date;
@@ -33,21 +33,66 @@ angular.module('IonicGo.services',[])
 
  })
 
- .factory('stockDataService',function($q,$http,encodeURIService){
+ .factory('chartDataCacheService',function(CacheFactory){
+ 	var chartDataCache;
+    
+    if(!CacheFactory.get('chartDataCache')){
+    	chartDataCache=CacheFactory('chartDataCache',{
+    		maxAge: 60*60*8*1000,
+    		deleteOnExpire: 'aggressive',
+    		storageMode:'localStorage'
+    	});
+    }
+    else {
+    	chartDataCache=CacheFactory.get('chartDataCache');
+    }
+
+ 	return chartDataCache;
+ })
+
+ .factory('stockDataCacheService',function(CacheFactory){
+ 	var stockDataCache;
+    
+    if(!CacheFactory.get('stockDataCache')){
+    	stockDataCache=CacheFactory('stockDataCache',{
+    		maxAge: 60*60*8*1000,
+    		deleteOnExpire: 'aggressive',
+    		storageMode:'localStorage'
+    	});
+    }
+    else {
+    	stockDataCache=CacheFactory.get('stockDataCache');
+    }
+
+ 	return stockDataCache;
+ })
+
+ .factory('stockDataService',function($q,$http,encodeURIService,stockDataCacheService){
 
   var getPriceData=function(ticker){
         
        var deferred = $q.defer(),
+       cacheKey = ticker,
+       stockDataCache=stockDataCacheService.get(cacheKey),
+
        url="http://query.yahooapis.com/v1/public/yql?format=json&env=store://datatables.org/alltableswithkeys&q=select * from yahoo.finance.quote where symbol in ('"+ ticker +"')";
-       	$http.get(url)
+       if(stockDataCache){
+       	deferred.resolve(stockDataCache);
+       	console.log("Get stock data cache")
+       }
+       else{
+       $http.get(url)
        .success(function(json){
        var jsonData = json.query.results.quote;
        deferred.resolve(jsonData);
-     })
+       stockDataCacheService.put(cacheKey,jsonData)
+       })
        .error(function(error){
        console.log("API error" + error);
        deferred.reject();
        })
+
+       }
      
      return deferred.promise;
 
@@ -61,37 +106,50 @@ angular.module('IonicGo.services',[])
  		
  })
 
- .factory('chartDataService', function($q,$http,encodeURIService){
+ .factory('chartDataService', function($q,$http,encodeURIService,chartDataCacheService){
    
    var getHistoricalData = function(ticker,fromDate,endDate){
        
        var deferred = $q.defer(),
+       
+       cacheKey = ticker,
+       chartDataCache=chartDataCacheService.get(cacheKey),
+     
        url="http://query.yahooapis.com/v1/public/yql?format=json&env=store://datatables.org/alltableswithkeys&q=select * from yahoo.finance.historicaldata where symbol = '"+ticker+"' and startDate = '"+fromDate+"' and endDate = '"+endDate+"'"
-       $http.get(url)
+     
+
+       if(chartDataCache){
+       	deferred.resolve(chartDataCache);
+       	console.log("Get chart cache")
+       }
+       else{
+       	$http.get(url)
        .success(function(json){
        var jsonData = json.query.results.quote;
        var priceData = [];
        jsonData.forEach(function(dayDataObject){
        	var date = dayDataObject.Date.substring(5),
        	price= parseFloat(Math.round(dayDataObject.Close*100)/100).toFixed(3);
-        priceDatum= {"label": date ,"value": price}
+        var volume = parseInt(dayDataObject.Volume/10000).toFixed(2)*10000;
+        priceDatum= {"label": date ,"value": volume}
         priceData.unshift(priceDatum);
-
+   
        })
-       
+       console.log(priceData)
  
        var formattedChartData = 
        [{ key: 'Cumulative Return', values: priceData }] ;
-        
-         console.log(formattedChartData)
 
        deferred.resolve(formattedChartData);
+       chartDataCacheService.put(cacheKey,formattedChartData)
 
      })
        .error(function(error){
        console.log("Chart Data error" + error);
        deferred.reject();
        })
+
+       }  
 
        return deferred.promise;
     

@@ -1,1 +1,68 @@
 /* Empty. Add your own CSS if you like */
+
+/* chart */
+#interactiveChart {
+	height: 80vmin;
+}
+
+
+.nv-groups{
+	text-anchor: middle;
+}
+
+.tick.zero{
+	font: 400 2vmin "Helvetica Neue",sans-serif !important;
+}
+
+.nv-axislabel {
+	font-size: 5vmin;
+	font-family: 'Baloo', cursive;
+}
+
+/* stock data */
+
+#stock-name{
+	color: #333;
+	float: left;
+	font-size:3.5vmin;
+	font-weight: normal;
+	margin: auto 0 ;
+	max-width: 33vw;
+	overflow: hidden;
+    text-align: left;
+    text-overflow: ellipsis;
+}
+
+#stock-price{
+	font-size: 7vmin;
+	line-height: 32pt;
+}
+
+#stock-change{
+	font-size: 4vmin;
+	font-weight: bolder;
+	float: right;
+    line-height: 12pt;
+    margin:auto 0;
+}
+
+#stock-nav-bar ion-header-bar{
+	border: none;
+}
+span.back-text{
+	font-size: 18pt;
+}
+
+
+/* Market-data-card */
+#market-data-card{
+    font-size: 3.25vmin;
+}
+#market-data-card.col-20{
+    font-weight: border;
+}
+#market-data-card.col-20:last-of-type{
+    text-align: right;
+}
+
+

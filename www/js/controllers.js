@@ -78,6 +78,16 @@ angular.module('IonicGo.controllers', [])
     promise.then(function(data){
     console.log(data);
     $scope.stockPriceData = data;
+    if(data.Change >=0 && data!==null){
+      $scope.reactiveColor={
+        'background-color' : 'green'        
+      }
+    }
+    else if(data.Change < 0 && data!==null){
+      $scope.reactiveColor={
+        'background-color' : 'red'        
+      }
+    }
   });
   }
 
@@ -85,36 +95,41 @@ angular.module('IonicGo.controllers', [])
     var promise = chartDataService.getHistoricalData($scope.ticker,$scope.oneMonthAgoDate,$scope.currentDate);
     promise.then(function(data){
     $scope.data=data
-    console.log(data);
   });
   }
     /* Chart options */
-     $scope.options = { chart: {
+     $scope.options = { 
+       chart: {
         type: 'discreteBarChart',
-        height: 450,
+        height: 350,
         margin : {
-            top: 20,
+            top: 50,
             right: 20,
             bottom: 60,
-            left: 55
+            left: 90  
+        },
+        subtitle: {
+        enable: true,
+        text: 'Volume Sheet'
         },
         x: function(d){ return d.label; },
         y: function(d){ return d.value; },
         showValues: true,
         valueFormat: function(d){
-            return d3.format(',.4f')(d);
+            return d3.format('s')(d);
         },
         transitionDuration: 500,
         xAxis: {
-            axisLabel: 'X Axis'
+            axisLabel: 'Date'
         },
         yAxis: {
-            axisLabel: 'Y Axis',
-            axisLabelDistance: 30
+            axisLabel: 'Volume',
+            axisLabelDistance: 10,
+            tickFormat: d3.format('s')
         }
+
     }};
     /* Chart data */
-
 
 
 
