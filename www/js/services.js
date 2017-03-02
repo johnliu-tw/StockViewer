@@ -67,6 +67,26 @@ angular.module('IonicGo.services',[])
 
  	return stockDataCache;
  })
+ .factory('noteCacheService',function(CacheFactory){
+    var noteDataCache;
+    
+    if(!CacheFactory.get('noteDataCache')){
+    	noteDataCache=CacheFactory('noteDataCache',{
+    		maxAge: 60*60*8*1000,
+    		deleteOnExpire: 'aggressive',
+    		storageMode:'localStorage'
+    	});
+    }
+    else {
+    	noteDataCache=CacheFactory.get('noteDataCache');
+    }
+
+ 	return noteDataCache;
+
+
+ })
+
+
 
  .factory('stockDataService',function($q,$http,encodeURIService,stockDataCacheService){
 
@@ -159,6 +179,37 @@ angular.module('IonicGo.services',[])
    	getHistoricalData: getHistoricalData
    }
 
+ })
+
+ .factory('noteService',function(noteCacheService) {
+ 	return{
+ 		getNote: function(ticker){
+          return noteCacheService.get(ticker);
+ 		},
+ 		addNote: function(ticker,note){
+          
+          var stockNotes = [];
+
+          if(noteCacheService.get(ticker)){
+          	stockNotes = noteCacheService.get(ticker);
+          	stockNotes.push(note);
+          }
+          else{
+          	stockNotes.push(note);
+          }
+
+ 		  noteCacheService.put(ticker,stockNotes);
+
+ 		},
+ 		deleteNote: function(ticker,index){
+          var stockNotes=[];
+          stockNotes = noteCacheService.get(ticker);
+          stockNotes.splice(index,1)
+          noteCacheService.put(ticker,stockNotes);
+          console.log("YA")
+         
+ 		}
+ 	}
  })
 
 

@@ -65,4 +65,24 @@ span.back-text{
     text-align: right;
 }
 
+/* card */
+#stock-notes .add-stock-note{
+	border: 1px solid #ff9000;
+	border-radius: 3px;
+	color: #ff9800;
+	float:right;
+	font-size: 11pt;
+	font-weight: 500;
+	padding: 0 5px;
+}
 
+#stock-note-title{
+	border-bottom: 1px solid #eee;
+	padding: 5px;
+
+}
+#stock-note-body{
+	min-height: 100px;
+	padding: 10px 5px 5px;
+	
+}
