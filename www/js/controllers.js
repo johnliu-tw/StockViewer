@@ -59,21 +59,28 @@ angular.module('IonicGo.controllers', [])
    ]
 }])
 
-.controller('StockCtrl', ['$scope','$stateParams','$ionicPopup','stockDataService', 'dateService','chartDataService','noteService',
-  function($scope, $stateParams,$ionicPopup,stockDataService,dateService,chartDataService,noteService) {
+.controller('StockCtrl', ['$scope','$stateParams','$ionicPopup','stockDataService', 'dateService','chartDataService','noteService','newsService',
+  function($scope, $stateParams,$ionicPopup,stockDataService,dateService,chartDataService,noteService,newsService) {
   
   $scope.ticker= $stateParams.stockticker;
   $scope.oneMonthAgoDate = dateService.oneMonthAgoDate();
   $scope.currentDate = dateService.currentDate();
   $scope.stockNotes= []; 
+  $scope.newStories = [];
 
   $scope.$on("$ionicView.afterEnter",function(){
     getPriceData();
     getChartData();
+    getNews();
     $scope.stockNotes = noteService.getNote($scope.ticker);
  
      
   })
+  
+  $scope.openWindow = function(link){
+    //
+    console.log("openWindow ->" + link)
+  };
 
   $scope.addNote = function() {
   $scope.note = {title: 'Note',body: '',date: $scope.currentDate,ticker: $scope.ticker};
@@ -162,6 +169,14 @@ angular.module('IonicGo.controllers', [])
     }
   });
   }
+  
+  function getNews(){
+       var promise = newsService.getNews($scope.ticker);
+       promise.then(function(data){
+       $scope.newStories = data;
+       console.log($scope.newStories)
+       })
+  }
 
   function getChartData(){
     var promise = chartDataService.getHistoricalData($scope.ticker,$scope.oneMonthAgoDate,$scope.currentDate);
@@ -201,7 +216,6 @@ angular.module('IonicGo.controllers', [])
         }
 
     }};
-    /* Chart data */
 
 
 
