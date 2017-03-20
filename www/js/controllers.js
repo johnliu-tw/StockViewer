@@ -41,32 +41,22 @@ angular.module('IonicGo.controllers', [])
   };  
 })
 
-.controller('MyStockCtrl', ['$scope', 
-  function($scope) {
-   $scope.MyStocksArray=[
-   {ticker: "AAPL"},
-   {ticker: "GPRO"},
-   {ticker: "FB"},
-   {ticker: "NFLX"},
-   {ticker: "TSLA"},
-   {ticker: "BRK-A"},
-   {ticker: "INTC"},
-   {ticker: "NSFT"},
-   {ticker: "GE"},
-   {ticker: "BAC"},
-   {ticker: "C"},
-   {ticker: "T"},
-   ]
+.controller('MyStockCtrl', ['$scope','myStocksArrayService', 
+  function($scope, myStocksArrayService) {
+   $scope.MyStocksArray=myStocksArrayService;
+   console.log(myStocksArrayService)
+
 }])
 
-.controller('StockCtrl', ['$scope','$stateParams','$ionicPopup','stockDataService', 'dateService','chartDataService','noteService','newsService',
-  function($scope, $stateParams,$ionicPopup,stockDataService,dateService,chartDataService,noteService,newsService) {
+.controller('StockCtrl', ['$scope','$stateParams','$ionicPopup','followStockService','stockDataService', 'dateService','chartDataService','noteService','newsService',
+  function($scope, $stateParams,$ionicPopup,followStockService,stockDataService,dateService,chartDataService,noteService,newsService) {
   
   $scope.ticker= $stateParams.stockticker;
   $scope.oneMonthAgoDate = dateService.oneMonthAgoDate();
   $scope.currentDate = dateService.currentDate();
   $scope.stockNotes= []; 
   $scope.newStories = [];
+  $scope.following = followStockService.checkFollowing($scope.ticker)
 
   $scope.$on("$ionicView.afterEnter",function(){
     getPriceData();
@@ -76,6 +66,17 @@ angular.module('IonicGo.controllers', [])
  
      
   })
+
+  $scope.toggleFollow = function(){
+    if($scope.following){
+      followStockService.unfollow($scope.ticker)
+      $scope.following = false;
+    }
+    else{
+      followStockService.follow($scope.ticker)
+      $scope.following = true;
+    }
+  }
   
   $scope.openWindow = function(link){
     //
@@ -159,12 +160,14 @@ angular.module('IonicGo.controllers', [])
     $scope.stockPriceData = data;
     if(data.Change >=0 && data!==null){
       $scope.reactiveColor={
-        'background-color' : 'green'        
+        'background-color' : 'green' ,
+        'border-color' : 'rgba(255,255,255,.3)'       
       }
     }
     else if(data.Change < 0 && data!==null){
       $scope.reactiveColor={
-        'background-color' : 'red'        
+        'background-color' : 'red',
+        'border-color' : 'rgba(0,0,0,.2)'        
       }
     }
   });
