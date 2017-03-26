@@ -9,7 +9,48 @@ angular.module('IonicGo.services',[])
    }
 
  })
+ .service('modalService', function($ionicModal){
+  
+  this.openModal = function(id){
+    var _this = this;
+    
 
+    if(id==1){
+      $ionicModal.fromTemplateUrl('templates/search.html', {
+       scope: null,
+       controller: ('SearchCtrl')
+      }).then(function(modal) {
+       _this.modal = modal;
+       _this.modal.show();
+    });
+    }
+    else if(id ==2){
+      $ionicModal.fromTemplateUrl('templates/login.html', {
+      scope: $scope
+      }).then(function(modal) {
+      $scope.modal = modal;
+    });
+    }
+    else if(id==3){
+      $ionicModal.fromTemplateUrl('templates/login.html', {
+      scope: $scope
+    }).then(function(modal) {
+      $scope.modal = modal;
+    });
+
+    }
+
+  };
+  
+  this.closeModal = function(){
+    var _this = this;
+    if(!_this.modal) return;
+    _this.modal.hide();
+    _this.modal.remove();
+
+  }
+
+ })
  .factory('dateService',function($filter){
 
    var currentDate = function(){
@@ -219,12 +260,10 @@ angular.module('IonicGo.services',[])
  .factory('chartDataService', function($q,$http,encodeURIService,chartDataCacheService){
    
    var getHistoricalData = function(ticker,fromDate,endDate){
-       
+    
        var deferred = $q.defer(),
-       
        cacheKey = ticker,
        chartDataCache=chartDataCacheService.get(cacheKey),
-     
        url="http://query.yahooapis.com/v1/public/yql?format=json&env=store://datatables.org/alltableswithkeys&q=select * from yahoo.finance.historicaldata where symbol = '"+ticker+"' and startDate = '"+fromDate+"' and endDate = '"+endDate+"'"
      
 
@@ -322,6 +361,29 @@ angular.module('IonicGo.services',[])
             }
     };
  })
+  .factory('searchService',function($q,$http,$sce){
+
+    return {
+
+    search: function(query) {
+
+      var deferred = $q.defer(),
+
+      url = 'http://d.yimg.com/aq/autoc?query='+query+'&region=US&lang=en-US';
+
+      $http.get(url)
+        .success(function(data){
+          var jsonData = data.ResultSet.Result;
+          console.log(jsonData)
+          deferred.resolve(jsonData);
+        }
+
+          )
+
+      return deferred.promise;
+    }
+  };
+  })
 
 
 
