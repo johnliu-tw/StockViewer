@@ -1,5 +1,18 @@
 /* Empty. Add your own CSS if you like */
 
+/* Search */
+
+#search {
+	background-color: rgba(20,20,20,.975);
+}
+#search .search-input{
+	background-color: rgba(20,20,20,.1);
+}
+#search input{
+	color: #fffs;
+}
+
+
 /*News card*/
 
 #stock-news .icon {
@@ -114,3 +127,31 @@ span.back-text{
 	padding: 10px 5px 5px;
 	
 }
+
+/* helper style */
+
+.font-normal{
+	font-weight: normal !important;
+}
+
+.border-none{
+	border-style: none !important;
+}
+
+.margin-auto,
+.margin-auto svg{
+	margin: auto;
+}
+
+.text-align-center{
+	text-align: center !important;
+}
+
+.text-uppercase{
+	text-transform: uppercase !important;
+}
+
+.text-capitalize{
+	text-transform: capitalize !important;
+}
+
