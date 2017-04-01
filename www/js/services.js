@@ -108,6 +108,23 @@ angular.module('IonicGo.services',[])
 
  	return stockDataCache;
  })
+
+ .factory('stockPriceCacheService',function(CacheFactory){
+  var stockPriceCache;
+    
+    if(!CacheFactory.get('stockPriceCache')){
+      stockPriceCache=CacheFactory('stockPriceCache',{
+        maxAge: 5*1000,
+        deleteOnExpire: 'aggressive',
+        storageMode:'localStorage'
+      });
+    }
+    else {
+      stockPriceCache=CacheFactory.get('stockPriceCache');
+    }
+
+  return stockPriceCache;
+ })
  .factory('noteCacheService',function(CacheFactory){
     var noteDataCache;
     
@@ -147,7 +164,6 @@ angular.module('IonicGo.services',[])
    {ticker: "TSLA"},
    {ticker: "BRK-A"},
    {ticker: "INTC"},
-   {ticker: "NSFT"},
    {ticker: "GE"},
    {ticker: "BAC"},
    {ticker: "C"},
@@ -194,13 +210,13 @@ angular.module('IonicGo.services',[])
 
     },
     unfollow: function(ticker){
-     for(var i=0;i< myStocksArrayService;i++){
+     for(var i=0;i< myStocksArrayService.length;i++){
       if(myStocksArrayService[i].ticker == ticker){
         myStocksArrayService.splice(i,1);
         myStocksCacheService.remove('myStocks')
         myStocksCacheService.put('myStocks',myStocksArrayService)
+        break;
       }
-      break;
      }
 
 
@@ -218,7 +234,7 @@ angular.module('IonicGo.services',[])
 
  })
 
- .factory('stockDataService',function($q,$http,encodeURIService,stockDataCacheService){
+ .factory('stockDataService',function($q,$http,encodeURIService,stockDataCacheService,stockPriceCacheService){
 
   var getPriceData=function(ticker){
         
@@ -237,6 +253,7 @@ angular.module('IonicGo.services',[])
        var jsonData = json.query.results.quote;
        deferred.resolve(jsonData);
        stockDataCacheService.put(cacheKey,jsonData)
+
        })
        .error(function(error){
        console.log("API error" + error);

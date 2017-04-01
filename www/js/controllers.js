@@ -7,11 +7,36 @@ angular.module('IonicGo.controllers', [])
  
 }])
 
-.controller('MyStockCtrl', ['$scope','myStocksArrayService', 
-  function($scope, myStocksArrayService) {
-   $scope.MyStocksArray=myStocksArrayService;
-   console.log(myStocksArrayService)
+.controller('MyStockCtrl', ['$scope','myStocksArrayService', 'stockDataService','stockDataCacheService','followStockService',
+  function($scope, myStocksArrayService, stockDataService, stockDataCacheService,followStockService) {
 
+ $scope.$on("$ionicView.afterEnter",function(){
+   
+      $scope.getMyStocksData();
+      console.log($scope.myStocksData)
+     
+  })
+
+
+ $scope.getMyStocksData = function(){
+    myStocksArrayService.forEach(function(stock){
+      var promise = stockDataService.getPriceData(stock.ticker);
+
+      $scope.myStocksData = [];
+
+      promise.then(function(data){
+      $scope.myStocksData.push(stockDataCacheService.get(data.symbol))
+      })
+
+    })
+    $scope.$broadcast("scroll.refreshComplete");
+   };
+   $scope.MyStocksArray=myStocksArrayService;
+   $scope.unfollowStock = function(ticker){
+    followStockService.unfollow(ticker);
+    $scope.getMyStocksData();
+   }
+  
 }])
 
 .controller('StockCtrl', ['$scope','$stateParams','$ionicPopup','followStockService','stockDataService', 'dateService','chartDataService','noteService','newsService',
