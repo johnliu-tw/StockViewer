@@ -26,19 +26,21 @@ angular.module('IonicGo.services',[])
     }
     else if(id ==2){
       $ionicModal.fromTemplateUrl('templates/login.html', {
-      scope: $scope
+      scope: null,
+      controller: ('LoginSignupCtrl')
       }).then(function(modal) {
-      $scope.modal = modal;
+       _this.modal = modal;
+       _this.modal.show();
     });
     }
     else if(id==3){
-      $ionicModal.fromTemplateUrl('templates/login.html', {
-      scope: $scope
-    }).then(function(modal) {
-      $scope.modal = modal;
+      $ionicModal.fromTemplateUrl('templates/signup.html', {
+      scope: null,
+      controller: ('LoginSignupCtrl')
+      }).then(function(modal) {
+       _this.modal = modal;
+       _this.modal.show();
     });
-
-    }
 
   };
   
@@ -50,7 +52,7 @@ angular.module('IonicGo.services',[])
 
   }
 
- })
+ }})
  .factory('dateService',function($filter){
 
    var currentDate = function(){
