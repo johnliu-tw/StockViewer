@@ -1,5 +1,6 @@
 angular.module('IonicGo.services',[])
 
+
  .factory('encodeURIService',function(){
 
    return{
@@ -75,6 +76,100 @@ angular.module('IonicGo.services',[])
    }
 
  })
+
+.factory('firebaseDBRef', function() {
+  return firebase.database().ref();
+})
+
+
+
+.factory('firebaseAuthRef', function() {
+  return firebase.auth();
+})
+
+
+
+.factory('firebaseUserRef', function(firebaseDBRef) {
+  return firebaseDBRef.child('users');
+})
+
+.factory('userService',function($rootScope,$window,$timeout,firebaseUserRef,firebaseAuthRef,
+  firebaseDBRef,myStocksArrayService,myStocksCacheService,noteCacheService,modalService){
+  
+  var login = function(user){
+     var email = user.email;
+     var password = user.password;
+     firebaseAuthRef.signInWithEmailAndPassword(email, password)
+      .then(function(authData) {
+        $rootScope.currentUser = authData;
+        modalService.closeModal();
+        })
+      
+      .catch(function(error) {
+        console.log("Login Failed!", error);
+        return false;
+      });
+  };
+  var signup = function(user){
+     firebaseAuthRef.createUserWithEmailAndPassword(user.email,user.password)
+     .then(function(userData) {
+       login(user, true);
+       firebaseDBRef.child('emails').push(user.email);
+       firebaseUserRef.child('stocks').set(myStocksArrayService);     
+       var stockWithNotes = noteCacheService.keys();
+       stockWithNotes.forEach(function(stockWithNotes){
+          var notes = noteCacheService.get(stockWithNotes);
+          notes.forEach(function(note){
+            firebaseUserRef.child(userData.uid).child('notes').child(note.ticker).push(note)
+          })
+       })
+     })
+     .catch(function(error) {
+       console.log("Error creating user:", error);
+       return false;
+     });
+
+  };
+
+  var logout = function(user){
+    firebaseAuthRef.signOut();
+    noteCacheService.removeAll();
+    myStocksCacheService.removeAll();
+    $window.location.reload(true);
+    $rootScope.currentUser = ''
+  };
+
+  var updateStocks = function(stocks){
+    firebaseUserRef.child(getUser().uid).child('stocks').set(stocks);
+
+  }
+
+  var updateNotes = function(ticker,notes){
+    firebaseUserRef.child(getUser().uid).child('notes').child(ticker).remove();
+    notes.forEach(function(note){
+      firebaseUserRef.child(getUser().uid).child('notes').child(note.ticker).push(note);
+    })
+  }
+
+  var getUser = function() {
+    return firebaseAuthRef.currentUser;
+  };
+
+  if(getUser()){
+    $rootScope.currentUser = getUser();
+  }
+  return{
+    login: login,
+    signup: signup,
+    logout: logout,
+    updateStocks : updateStocks,
+    updateNotes:updateNotes,
+    getUser : getUser
+
+
+  }
+  
+})
 
 
  .factory('chartDataCacheService',function(CacheFactory){
@@ -202,21 +297,26 @@ angular.module('IonicGo.services',[])
 
  })
 
- .factory('followStockService', function(myStocksArrayService, myStocksCacheService){
+ .factory('followStockService', function(myStocksArrayService, myStocksCacheService,userService){
 
   return{
     follow: function(ticker){
       var stockToAdd = {"ticker" : ticker};
       myStocksArrayService.push(stockToAdd)
       myStocksCacheService.put('myStocks',myStocksArrayService)
-
+      if(userService.getUser()){
+        userService.updateStocks(myStocksArrayService);
+      }
     },
     unfollow: function(ticker){
      for(var i=0;i< myStocksArrayService.length;i++){
       if(myStocksArrayService[i].ticker == ticker){
         myStocksArrayService.splice(i,1);
-        myStocksCacheService.remove('myStocks')
-        myStocksCacheService.put('myStocks',myStocksArrayService)
+        myStocksCacheService.remove('myStocks');
+        myStocksCacheService.put('myStocks',myStocksArrayService);
+        if(userService.getUser()){
+          userService.updateStocks(myStocksArrayService);
+        }
         break;
       }
      }
@@ -247,7 +347,6 @@ angular.module('IonicGo.services',[])
        url="http://query.yahooapis.com/v1/public/yql?format=json&env=store://datatables.org/alltableswithkeys&q=select * from yahoo.finance.quote where symbol in ('"+ ticker +"')";
        if(stockDataCache){
        	deferred.resolve(stockDataCache);
-       	console.log("Get stock data cache")
        }
        else{
        $http.get(url)
@@ -288,7 +387,6 @@ angular.module('IonicGo.services',[])
 
        if(chartDataCache){
        	deferred.resolve(chartDataCache);
-       	console.log("Get chart cache")
        }
        else{
        	$http.get(url)
@@ -303,7 +401,6 @@ angular.module('IonicGo.services',[])
         priceData.unshift(priceDatum);
    
        })
-       console.log(priceData)
  
        var formattedChartData = 
        [{ key: 'Cumulative Return', values: priceData }] ;
@@ -328,7 +425,7 @@ angular.module('IonicGo.services',[])
 
  })
 
- .factory('noteService',function(noteCacheService) {
+ .factory('noteService',function(noteCacheService,userService) {
  	return{
  		getNote: function(ticker){
           return noteCacheService.get(ticker);
@@ -347,13 +444,22 @@ angular.module('IonicGo.services',[])
 
  		  noteCacheService.put(ticker,stockNotes);
 
+      if(userService.getUser()){
+        var notes = noteCacheService.get(ticker);
+        userService.updateNotes(ticker,stockNotes);
+      }
+
  		},
  		deleteNote: function(ticker,index){
           var stockNotes=[];
           stockNotes = noteCacheService.get(ticker);
           stockNotes.splice(index,1)
           noteCacheService.put(ticker,stockNotes);
-          console.log("YA")
+
+          if(userService.getUser()){
+          var notes = noteCacheService.get(ticker);
+          userService.updateNotes(ticker,stockNotes);
+      }
          
  		}
  	}
@@ -393,7 +499,6 @@ angular.module('IonicGo.services',[])
       $http.get(url)
         .success(function(data){
           var jsonData = data.ResultSet.Result;
-          console.log(jsonData)
           deferred.resolve(jsonData);
         }
 

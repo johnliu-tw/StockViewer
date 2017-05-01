@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -34,9 +34,11 @@
     <script src="js/filter.js"></script>
     <script src="js/directives.js"></script>
     <script src="js/services.js"></script>
-
+    <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
     <!-- The third party lib -->
     <script src="lib/jquery.jsonp-2.4.0.min.js"></script>
+    <script src="lib/firebase/firebase.js"></script>
+    <script src="lib/angularfire/dist/angularfire.min.js"></script>
     <script src="lib/angular-cache/dist/angular-cache.min.js"></script>
     <script src="lib/d3/d3.min.js"></script>
     <script src="lib/nvd3/build/nv.d3.js"></script>
@@ -44,6 +46,18 @@
     <script src="lib/nv-chart/nv-chart.min.js"></script>
     <script src="lib/angular-x2js/dist/x2js.min.js" > </script>
     <script src="lib/x2js/xml2json.min.js" > </script>
+    <script>
+  // Initialize Firebase
+    var config = {
+    apiKey: "AIzaSyD7iNnhnFknQIDos9csvUkNlMg6KPbtUiQ",
+    authDomain: "ionicgo.firebaseapp.com",
+    databaseURL: "https://ionicgo.firebaseio.com",
+    projectId: "ionicgo",
+    storageBucket: "ionicgo.appspot.com",
+    messagingSenderId: "400203571106"
+    };
+    firebase.initializeApp(config);
+    </script>
     <link href="lib/nvd3/build/nv.d3.min.js" rel="stylesheet">
     <link href="lib/nv-chart/nv-chart.min.css" rel="stylesheet">  
 

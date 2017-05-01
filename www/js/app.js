@@ -5,6 +5,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('IonicGo', ['ionic', 
   'angular-cache',
+  'firebase',
   'nvd3',
   'nvChart',
   'cb.x2js',
