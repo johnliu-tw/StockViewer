@@ -96,13 +96,30 @@ angular.module('IonicGo.services',[])
 .factory('userService',function($rootScope,$window,$timeout,firebaseUserRef,firebaseAuthRef,
   firebaseDBRef,myStocksArrayService,myStocksCacheService,noteCacheService,modalService){
   
-  var login = function(user){
+  var login = function(user, signup){
      var email = user.email;
      var password = user.password;
      firebaseAuthRef.signInWithEmailAndPassword(email, password)
       .then(function(authData) {
         $rootScope.currentUser = authData;
-        modalService.closeModal();
+
+        if(signup){
+          modalService.closeModal();
+        }
+        else{
+          
+          myStocksCacheService.removeAll();
+          noteCacheService.removeAll();
+
+          loadUserData(authData);
+
+          modalService.closeModal();
+
+          $timeout(function() {
+            $window.location.reload(true);
+          }, 400);
+
+        }
         })
       
       .catch(function(error) {
@@ -149,6 +166,35 @@ angular.module('IonicGo.services',[])
     notes.forEach(function(note){
       firebaseUserRef.child(getUser().uid).child('notes').child(note.ticker).push(note);
     })
+  }
+
+  var loadUserData = function(authData){
+    firebaseUserRef.child(authData.uid).child('stocks').once('value', function(snapshot){
+      var stocksFromDatabase = [];
+      snapshot.val().forEach(function(stock){
+        var stockToAdd = {ticker: stock.ticker}
+        stocksFromDatabase.push(stockToAdd)
+      })
+      myStocksCacheService.put('myStocks', stocksFromDatabase);
+    },
+    function(error){
+      console.log("Firebase error -> stocks" + error )
+    });
+
+    firebaseUserRef.child(authData.uid).child('notes').once('value', function(snapshot){
+      snapshot.forEach(function(stockWithNotes){
+        var notesFromDatabase = [];
+        stockWithNotes.forEach(function(note){
+          notesFromDatabase.push(note.val())
+          var cacheKey = note.child('ticker').val();
+          noteCacheService.put(cacheKey, notesFromDatabase);
+        })
+      })
+    },
+    function(error){
+      console.log("Firebase error -> notes" + error )
+    });
+
   }
 
   var getUser = function() {

@@ -4,6 +4,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
 angular.module('IonicGo', ['ionic', 
+  'ngCordova',
   'angular-cache',
   'firebase',
   'nvd3',
@@ -27,7 +28,7 @@ angular.module('IonicGo', ['ionic',
     }
     if (window.StatusBar) {
       // org.apache.cordova.statusbar required
-      StatusBar.styleDefault();
+      StatusBar.styleHex("#ffffff");
     }
   });
 })

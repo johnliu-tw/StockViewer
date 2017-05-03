@@ -43,8 +43,8 @@ angular.module('IonicGo.controllers', [])
   
 }])
 
-.controller('StockCtrl', ['$scope','$stateParams','$ionicPopup','followStockService','stockDataService', 'dateService','chartDataService','noteService','newsService',
-  function($scope, $stateParams,$ionicPopup,followStockService,stockDataService,dateService,chartDataService,noteService,newsService) {
+.controller('StockCtrl', ['$scope','$stateParams','$ionicPopup','$cordovaInAppBrowser','followStockService','stockDataService', 'dateService','chartDataService','noteService','newsService',
+  function($scope, $stateParams,$ionicPopup,$cordovaInAppBrowser,followStockService,stockDataService,dateService,chartDataService,noteService,newsService) {
   
   $scope.ticker= $stateParams.stockticker;
   $scope.oneMonthAgoDate = dateService.oneMonthAgoDate();
@@ -74,7 +74,13 @@ angular.module('IonicGo.controllers', [])
   }
   
   $scope.openWindow = function(link){
-    //
+    var inAppBrowserOptions = {
+      location: 'yes',
+      clearcache: 'yes',
+      toolbar: 'yes'  
+    };
+
+    $cordovaInAppBrowser.open(link, '_blank', inAppBrowserOptions)
     console.log("openWindow ->" + link)
   };
 
