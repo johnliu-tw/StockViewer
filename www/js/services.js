@@ -94,7 +94,7 @@ angular.module('IonicGo.services',[])
 })
 
 .factory('userService',function($rootScope,$window,$timeout,firebaseUserRef,firebaseAuthRef,
-  firebaseDBRef,myStocksArrayService,myStocksCacheService,noteCacheService,modalService){
+  firebaseDBRef,myStocksArrayService,myStocksCacheService,noteCacheService,modalService,userCacheService){
   
   var login = function(user, signup){
      var email = user.email;
@@ -112,7 +112,7 @@ angular.module('IonicGo.services',[])
           noteCacheService.removeAll();
 
           loadUserData(authData);
-
+          userCacheService.put(email, authData);
           modalService.closeModal();
 
           $timeout(function() {
@@ -152,8 +152,9 @@ angular.module('IonicGo.services',[])
     firebaseAuthRef.signOut();
     noteCacheService.removeAll();
     myStocksCacheService.removeAll();
+    userCacheService.removeAll();
+    $rootScope.currentUser = '';
     $window.location.reload(true);
-    $rootScope.currentUser = ''
   };
 
   var updateStocks = function(stocks){
@@ -283,6 +284,24 @@ angular.module('IonicGo.services',[])
     }
 
  	return noteDataCache;
+
+
+ })
+ .factory('userCacheService',function(CacheFactory){
+    var userDataCache;
+    
+    if(!CacheFactory.get('userDataCache')){
+      userDataCache=CacheFactory('userDataCache',{
+        maxAge: 60*60*8*1000,
+        deleteOnExpire: 'aggressive',
+        storageMode:'localStorage'
+      });
+    }
+    else {
+      userDataCache=CacheFactory.get('userDataCache');
+    }
+
+  return userDataCache;
 
 
  })

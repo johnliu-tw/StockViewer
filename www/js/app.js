@@ -17,8 +17,17 @@ angular.module('IonicGo', ['ionic',
 
   ])
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform,$rootScope,userCacheService) {
   $ionicPlatform.ready(function() {
+
+    if(userCacheService.keys().length !=0){
+      $rootScope.currentUser = userCacheService.get(userCacheService.keys())
+    console.log(userCacheService.keys())
+    }
+    else{
+      $rootScope.currentUser = "";
+    }
+
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
     if (window.cordova && window.cordova.plugins.Keyboard) {

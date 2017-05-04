@@ -21,8 +21,8 @@
         <h6>{{stock.Volume}}</h6>
       </div>
       <div class="col col-33 stock-change" ng-class="stock.Change > 0 ? 'background-green': 'background-red'">
-        <h3>{{stock.DaysRange}}</h3>
-        <h6><span ng-if="stock.change > 0">+</span>{{stock.Change | shrinkNumber:2}}</h6>
+        <h2 class="stock-color">{{stock.DaysRange}}</h3>
+        <h4 class="stock-color"><span ng-if="stock.change > 0">+</span>{{stock.Change | shrinkNumber:2}}</h6>
       </div>
     </div>
 

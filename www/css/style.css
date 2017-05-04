@@ -209,4 +209,8 @@ span.back-text{
 .font-color-black{
 	color: black !important;
 }
+.stock-color{
+	color: white !important;
+	font-weight: bold !important;
+}
 
