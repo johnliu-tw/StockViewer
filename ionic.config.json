@@ -1,5 +1,5 @@
 {
-  "name": "IonicGo",
+  "name": "StockViewer",
   "app_id": "2a9806b1",
   "gulpStartupTasks": [
     "sass",
