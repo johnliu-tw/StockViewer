@@ -9,6 +9,20 @@
    <ion-refresher pulling-text="Pull to refresh..." on-refresh="getMyStocksData()" class="margin-auto">
      
    </ion-refresher>
+   <div class="row cow-center">
+     <div class="col text-overflow-ellipsis stock-ticker-name">
+      <h5>Symbol /</h5>
+      <h5>Company Name</h5>
+     </div>
+     <div class="col col-25 stock-price-time">
+      <h5>Last Trade Price Only /</h3>
+      <h5>Volume</h6>
+     </div>
+     <div class="col col-33 stock-change">
+       <h5>Days Range /</h2>
+       <h5>Change</h6>
+     </div>
+   </div>
     <ion-list>
       <ion-item ng-repeat="stock in myStocksData" ng-href="#/app/{{stock.symbol}}">
     <div class="row row-center">
